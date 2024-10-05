@@ -5,8 +5,6 @@ const userServiceInstance = new userService();
 const registerController = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
-    console.log(fullname, email, password);
-
     const result = await userServiceInstance.createUser({
       fullname,
       email,
