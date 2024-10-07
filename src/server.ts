@@ -5,6 +5,7 @@ import connectDB from "./config";
 import cookieParser from "cookie-parser";
 import allRoutes from "./routes";
 import { paths } from "./routes/path";
+import serverless from 'serverless-http';
 
 const { PORT } = EnvVars;
 
@@ -19,3 +20,7 @@ app.use(paths.Base, allRoutes);
 app.listen(PORT, () => {
   console.log(`Server is runing on the PORT ${PORT}`);
 });
+
+
+module.exports = app;
+module.exports.handler = serverless(app);
