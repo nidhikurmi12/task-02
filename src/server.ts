@@ -1,10 +1,10 @@
 import expres from "express";
 import cors from "cors";
-import { EnvVars } from "./src/config/serverConfig";
-import connectDB from "./src/config";
+import { EnvVars } from "./config/serverConfig";
+import connectDB from "./config";
 import cookieParser from "cookie-parser";
-import allRoutes from "./src/routes";
-import { paths } from "./src/routes/path";
+import allRoutes from "./routes";
+import { paths } from "./routes/path";
 
 const { PORT } = EnvVars;
 
