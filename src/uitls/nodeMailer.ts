@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const MailSender = async (email, id) => {
  
-  const verificationLink = `https://task-02-three.vercel.app/api/v1/user/verify/${id}`;
+  const verificationLink = `http://localhost:8080/api/v1/user/verify/${id}`;
 
  
   const emailTemplate = `
