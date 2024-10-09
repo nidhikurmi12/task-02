@@ -12,9 +12,16 @@ const { PORT } = EnvVars;
 const app = expres();
 connectDB();
 
+
+
 app.use(expres.json());
 app.use(cors());
 app.use(cookieParser());
+
+app.get('/',(req,res)=>{
+  res.send("<h1>this is home page</h1>")
+})
+
 app.use(paths.Base, allRoutes);
 
 app.listen(PORT, () => {
