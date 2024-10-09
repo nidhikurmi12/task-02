@@ -19,7 +19,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.get('/',(req,res)=>{
-  res.send("<h1>this is home page</h1>")
+  res.send("<h1>this is home pag</h1>")
 })
 
 app.use(paths.Base, allRoutes);
