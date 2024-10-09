@@ -1,5 +1,7 @@
+import { MailVerification } from "../models";
 import user from "../models/usermodel";
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid';
 
 class UserRepository {
   async registerUser(data: {
@@ -9,6 +11,7 @@ class UserRepository {
   }) {
     try {
       const response = await user.create(data);
+
       return response;
     } catch (error) {
       if (error instanceof mongoose.Error.ValidationError) {
@@ -33,6 +36,16 @@ class UserRepository {
       throw new Error("error occurred while registering the user");
     }
   }
+
+  async createVerification(email) {
+    console.log(email)
+    const randomId = uuidv4();
+      const response = await MailVerification.create({
+        email:email,
+        id: randomId,
+      });
+      return response;
+    }
 }
 
 export default UserRepository;

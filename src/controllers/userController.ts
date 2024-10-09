@@ -1,4 +1,6 @@
+import { MailVerification, User } from "../models";
 import { userService } from "../services";
+import path from "path";
 
 const userServiceInstance = new userService();
 
@@ -13,12 +15,12 @@ const registerController = async (req, res) => {
     if (result.success) {
       return res
         .status(201)
-        .json({ message: "User registered successfully", user: result.user });
+        .send({ message: "User registered successfully", user: result.user });
     } else {
       return res.status(400).json({ message: result.message });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "intern serever err" });
   }
 };
 
@@ -58,4 +60,52 @@ const dashBoardController = async (req, res) => {
   }
 };
 
-export { registerController, loginController,dashBoardController};
+const verificationController = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const verifyObject = await MailVerification.findOne({ id });
+    if (!verifyObject) {
+      const filePath = path.join(__dirname, "../views/invaild.html");
+      return res.sendFile(filePath);
+    }
+
+    if (verifyObject.IsExpired) {
+      const filePath = path.join(__dirname, "../views/verification.html");
+      return res.sendFile(filePath);
+    }
+
+    const findUserByEmail = await userServiceInstance.getUserDetails(
+      verifyObject.email
+    );
+
+    if (!findUserByEmail.data.email) {
+    
+      const filePath = path.join(__dirname, "../views/usernotfound.html");
+      return res.sendFile(filePath);
+    }
+
+   await User.findOneAndUpdate(
+      { email: findUserByEmail.data.email },
+      { IsEmailVerified: true },
+      { new: true }
+    );
+ 
+    await MailVerification.findByIdAndUpdate({_id:verifyObject._id},{
+      IsExpired:true
+      })
+    const file = path.join(__dirname, "../views/verificationsuccess.html");
+
+    return res.sendFile(file);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
+export {
+  registerController,
+  loginController,
+  dashBoardController,
+  verificationController,
+};

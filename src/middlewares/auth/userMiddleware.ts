@@ -21,19 +21,20 @@ export const userAuthCheck = async (
       token = accessToken;
     } else if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
+    
     }
 
     if (!token) {
-      return res.status(400).send({ success: false, message: "Invalid Token" });
+      return res.status(400).send({ success: false, message: " Token Not Found" });
     }
 
     jwt.verify(token, SECRET_KEY, (err: any, decoded: any) => {
       if (err) {
-        return res.status(400).send({ success: false, message: "Forbidden" });
+        return res.status(400).send({ success: false, message: "unauthorized" });
       }
 
       (req as any).user = decoded;
-
+ 
       if (!decoded.email) {
         return res
           .status(400)

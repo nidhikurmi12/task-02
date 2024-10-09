@@ -7,5 +7,7 @@ dotenv.config();
 export const EnvVars = {
   DB_URL: process.env.DB_URL,
   PORT: process.env.PORT,
-  SECRET_KEY:process.env.SECRET_KEY
+  SECRET_KEY:process.env.SECRET_KEY,
+  USER:process.env.USER,
+  PASS:process.env.PASS
 };

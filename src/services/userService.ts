@@ -1,8 +1,9 @@
 import { userRepository } from "../repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose"; // Import mongoose to use ObjectId type
 import { EnvVars } from "./../config/serverConfig";
+import MailSender from './../uitls/nodeMailer';
+
 
 interface IUserPayload {
   email: string;
@@ -21,6 +22,11 @@ class userService {
       const isUserPresnt = await this.userRepo.isUserAlreadyPresent(data.email);
       if (!isUserPresnt.success) {
         const createdUser = await this.userRepo.registerUser(data);
+       
+        const mailVerification=await this.userRepo.createVerification(data.email)
+        if(mailVerification){
+          MailSender(data.email,mailVerification.id)
+        }
         return { success: true, user: createdUser };
       } else {
         return { success: false, message: "User already exists" };
@@ -44,8 +50,10 @@ class userService {
       if (!isMatch) {
         return { success: false, message: "Incorrect password" };
       }
+
       const { email, fullname } = isUserPresnt.data;
       const Token = this.createToken({ email, fullname });
+      console.log(Token)
 
       return {
         success: true,

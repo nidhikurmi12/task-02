@@ -1,10 +1,12 @@
 import mongoose, { Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 
+
 interface IUserSchema {
   fullname: string;
   email: string;
   password: string;
+  IsEmailVerified:boolean
 }
 
 type IUserModel = IUserSchema & Document;
@@ -23,6 +25,10 @@ const userSchema = new mongoose.Schema<IUserSchema>({
     type: String,
     required: [true, "password is required"],
   },
+  IsEmailVerified:{
+    type:Boolean,
+    default:false
+  }
 });
 
 userSchema.pre("save", async function (next) {
