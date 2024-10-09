@@ -61,6 +61,7 @@ const dashBoardController = async (req, res) => {
 };
 
 const verificationController = async (req, res) => {
+  console.log("route hit")
   try {
     const id = req.params.id;
 
