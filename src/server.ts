@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import allRoutes from "./routes";
 import { paths } from "./routes/path";
 import serverless from 'serverless-http';
+import interviewReminderCron from "./uitls/jobs";
+import morgan from "morgan"
 
 const { PORT } = EnvVars;
 
@@ -17,12 +19,11 @@ connectDB();
 app.use(expres.json());
 app.use(cors());
 app.use(cookieParser());
+app.use(morgan("dev"))
 
-app.get('/',(req,res)=>{
-  res.send("<h1>this is home pag</h1>")
-})
 
 app.use(paths.Base, allRoutes);
+interviewReminderCron()
 
 app.listen(PORT, () => {
   console.log(`Server is runing on the PORT ${PORT}`);

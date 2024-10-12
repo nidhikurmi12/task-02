@@ -1,4 +1,4 @@
-import { MailVerification, User } from "../models";
+import { Candidate, MailVerification, User } from "../models";
 import { userService } from "../services";
 import path from "path";
 
@@ -7,12 +7,21 @@ const userServiceInstance = new userService();
 const registerController = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
+
+   if([fullname,email,password].some((ele)=>ele==="")){
+    return res.status(400).json({ message: "fill all the fileds" });
+   }
+
     const result = await userServiceInstance.createUser({
       fullname,
       email,
       password,
     });
+    console.log(result)
+      
+
     if (result.success) {
+      await Candidate.create({ candidateId: result.user._id });
       return res
         .status(201)
         .send({ message: "User registered successfully", user: result.user });
@@ -20,7 +29,8 @@ const registerController = async (req, res) => {
       return res.status(400).json({ message: result.message });
     }
   } catch (error) {
-    res.status(500).json({ error: "intern serever err" });
+    res.status(500).json({ error: "intern serever err" }); 
+    console.log(error)
   }
 };
 
@@ -28,7 +38,11 @@ const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await userServiceInstance.login({ email, password });
-
+    if ([email, password].some((ele) => ele === "")) {
+      return res.status(400).json({ message: "Fill all the fields" });
+    }
+    
+  
     if (!result.success) {
       return res
         .status(400)
@@ -61,7 +75,7 @@ const dashBoardController = async (req, res) => {
 };
 
 const verificationController = async (req, res) => {
-  console.log("route hit")
+  console.log("route hit");
   try {
     const id = req.params.id;
 
@@ -81,20 +95,22 @@ const verificationController = async (req, res) => {
     );
 
     if (!findUserByEmail.data.email) {
-    
       const filePath = path.join(__dirname, "../views/usernotfound.html");
       return res.sendFile(filePath);
     }
 
-   await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { email: findUserByEmail.data.email },
       { IsEmailVerified: true },
       { new: true }
     );
- 
-    await MailVerification.findByIdAndUpdate({_id:verifyObject._id},{
-      IsExpired:true
-      })
+
+    await MailVerification.findByIdAndUpdate(
+      { _id: verifyObject._id },
+      {
+        IsExpired: true,
+      }
+    );
     const file = path.join(__dirname, "../views/verificationsuccess.html");
 
     return res.sendFile(file);

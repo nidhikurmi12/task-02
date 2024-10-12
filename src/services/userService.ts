@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { EnvVars } from "./../config/serverConfig";
 import MailSender from './../uitls/nodeMailer';
+import { verificationTemplate } from "../uitls/emailTemplate";
 
 
 interface IUserPayload {
@@ -25,7 +26,8 @@ class userService {
        
         const mailVerification=await this.userRepo.createVerification(data.email)
         if(mailVerification){
-          MailSender(data.email,mailVerification.id)
+          const tempate=verificationTemplate(mailVerification.id)
+          MailSender(data.email,tempate)
         }
         return { success: true, user: createdUser };
       } else {
@@ -38,15 +40,17 @@ class userService {
 
   async login(data: { email: string; password: string }) {
     try {
+      console.log(data)
       const isUserPresnt = await this.userRepo.isUserAlreadyPresent(data.email);
-      if (!isUserPresnt) {
+      console.log(isUserPresnt)
+      if (!isUserPresnt.success) {
         return { success: false, message: "User Not exists please register" };
       }
       const isMatch = await bcrypt.compare(
         data.password,
         isUserPresnt.data.password
       );
-
+      console.log(isMatch)
       if (!isMatch) {
         return { success: false, message: "Incorrect password" };
       }

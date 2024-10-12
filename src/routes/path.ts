@@ -20,4 +20,7 @@ export const paths = {
     }
 
   },
+  admin:{
+    Base:"/admin"
+  }
 };
